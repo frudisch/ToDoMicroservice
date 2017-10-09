@@ -8,7 +8,7 @@ import (
 func main() {
 	os.Setenv("APP_DB_USERNAME", "go_user")
 	os.Setenv("APP_DB_PASSWORD", "go_user_passwd")
-	os.Setenv("APP_DB_NAME", "todo_test")
+	os.Setenv("APP_DB_NAME", "todo")
 
 	a := app.App{}
 	a.Initialize(

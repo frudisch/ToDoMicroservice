@@ -1,10 +1,18 @@
 CREATE USER go_user WITH PASSWORD 'go_user_passwd';
 
+CREATE DATABASE todo
+WITH
+OWNER = go_user
+TABLESPACE = pg_default
+CONNECTION LIMIT = -1;
+
 CREATE DATABASE todo_test
 WITH
 OWNER = go_user
 TABLESPACE = pg_default
 CONNECTION LIMIT = -1;
+
+-- Create table for todo_test database (test environment)
 
 \c todo_test;
 
@@ -19,10 +27,30 @@ CREATE TABLE todo
 WITH (
 OIDS = FALSE
 );
+
 ALTER TABLE todo
   OWNER TO go_user;
 
---Create Data
+-- Create table for todo database
+
+\c todo;
+
+CREATE TABLE todo
+(
+  ID          SERIAL,
+  NAME        CHARACTER VARYING(255),
+  DESCRIPTION VARCHAR(255),
+  DUE_TO      BIGINT,
+  CONSTRAINT todos_pkey PRIMARY KEY (id)
+)
+WITH (
+OIDS = FALSE
+);
+
+ALTER TABLE todo
+  OWNER TO go_user;
+
+--Create Data in todo database
 
 INSERT INTO todo (ID, NAME, DESCRIPTION, DUE_TO)
 VALUES (1, 'GO REST API', 'Setup Go Rest API for Blog entry', 1507273200000);

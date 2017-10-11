@@ -17,12 +17,14 @@ type App struct {
 	DB     *sql.DB
 }
 
-func (app *App) Initialize(user, password, dbname string) {
+func (app *App) Initialize(dbConnection, user, password, dbname string) {
 	// sslmode=disable to ensure only HTTP connection to database for simplicity purposes
-	connectionString := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", user, password, dbname)
+	// connectionString := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", user, password, dbname)
+	connectionString := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", user, password, dbConnection, dbname)
 
 	var err error
 	app.DB, err = sql.Open("postgres", connectionString)
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,6 +34,7 @@ func (app *App) Initialize(user, password, dbname string) {
 }
 
 func (app *App) initializeRoutes() {
+	app.Router.HandleFunc("/status", app.getStatus).Methods("GET")
 	app.Router.HandleFunc("/todos", app.getTodos).Methods("GET")
 	app.Router.HandleFunc("/todo", app.createTodo).Methods("POST")
 	app.Router.HandleFunc("/todo/{id:[0-9]+}", app.getTodo).Methods("GET")
@@ -40,8 +43,13 @@ func (app *App) initializeRoutes() {
 }
 
 func (app *App) Run(addr string) {
-	fmt.Println("Server starting!")
-	log.Fatal(http.ListenAndServe(":8000", app.Router))
+	fmt.Println("Server starting on", addr)
+	log.Fatal(http.ListenAndServe(addr, app.Router))
+}
+
+func (app *App) getStatus(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Checking status")
+	respondWithJSON(w, http.StatusOK, "ok")
 }
 
 func (app *App) getTodo(w http.ResponseWriter, r *http.Request) {

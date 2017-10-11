@@ -17,12 +17,14 @@ import (
 var a app.App
 
 func TestMain(m *testing.M) {
+	os.Setenv("TEST_DB_CONNECTION", "localhost:5432")
 	os.Setenv("TEST_DB_USERNAME", "go_user")
 	os.Setenv("TEST_DB_PASSWORD", "go_user_passwd")
 	os.Setenv("TEST_DB_NAME", "todo_test")
 
 	a = app.App{}
 	a.Initialize(
+		os.Getenv("TEST_DB_CONNECTION"),
 		os.Getenv("TEST_DB_USERNAME"),
 		os.Getenv("TEST_DB_PASSWORD"),
 		os.Getenv("TEST_DB_NAME"))

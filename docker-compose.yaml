@@ -1,0 +1,17 @@
+version: '3'
+services:
+  postgres:
+    build: db_setup/
+    ports:
+      - "127.0.0.1:5432:5432"
+  server:
+    build: .
+    ports:
+      - "8080:8080"
+    links:
+      - postgres:db
+    environment:
+      - DB_CONNECTION=db
+      - APP_DB_USERNAME=go_user
+      - APP_DB_PASSWORD=go_user_passwd
+      - APP_DB_NAME=todo
